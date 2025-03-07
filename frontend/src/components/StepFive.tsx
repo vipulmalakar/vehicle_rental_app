@@ -27,8 +27,12 @@ const StepFive = ({ onSubmit, onBack, onReset }: { onSubmit: (values: any) => vo
     try {
       await onSubmit(values);
       setIsBookingSuccessful(true);
-    } catch (error) {
-      setErrorMessage("Booking failed. Please try again.");
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("Booking failed. Please try again.");
+      }
       setSuccessMessage(null);
     }
   };
