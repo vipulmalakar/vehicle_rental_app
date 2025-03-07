@@ -4,6 +4,7 @@ import { Button, FormControl, FormControlLabel, Radio, RadioGroup, Box } from "@
 import * as Yup from "yup";
 import { fetchVehicleTypes } from "../services/api";
 import { useBookingForm } from "../context/BookingFormContext";
+import { BookingFormValues } from "../interfaces/BookingFormInterfaces";
 
 interface VehicleType {
   id: number;
@@ -14,7 +15,7 @@ const StepThreeSchema = Yup.object().shape({
   typeId: Yup.number().required("Please select vehicle type"),
 });
 
-const StepThree = ({ onSubmit, onBack }: { onSubmit: (values: any) => void, onBack: () => void }) => {
+const StepThree = ({ onSubmit, onBack }: { initialValues: BookingFormValues; onSubmit: (values: BookingFormValues) => void; onBack: () => void; }) => {
   const { formData, resetDependentFields } = useBookingForm();
   const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([]);
 

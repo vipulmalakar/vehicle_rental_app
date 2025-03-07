@@ -4,6 +4,7 @@ import { Button, FormControl, FormControlLabel, Radio, RadioGroup, Box } from "@
 import * as Yup from "yup";
 import { fetchVehicleModels } from "../services/api";
 import { useBookingForm } from "../context/BookingFormContext";
+import { BookingFormValues } from "../interfaces/BookingFormInterfaces";
 
 interface VehicleModel {
   id: number;
@@ -14,7 +15,7 @@ const StepFourSchema = Yup.object().shape({
   vehicleId: Yup.number().required("Please select a vehicle model"),
 });
 
-const StepFour = ({ onSubmit, onBack }: { onSubmit: (values: any) => void, onBack: () => void }) => {
+const StepFour = ({ onSubmit, onBack }: { initialValues: BookingFormValues; onSubmit: (values: BookingFormValues) => void; onBack: () => void; }) => {
   const { formData } = useBookingForm();
   const [vehicles, setVehicles] = useState<VehicleModel[]>([]);
 
@@ -27,7 +28,7 @@ const StepFour = ({ onSubmit, onBack }: { onSubmit: (values: any) => void, onBac
 
   return (
     <Formik
-      initialValues={formData}
+      initialValues={{ ...formData, vehicleId: formData.vehicleId ?? 0 }}
       validationSchema={StepFourSchema}
       onSubmit={(values, { validateForm }) => {
         validateForm().then((errors) => {

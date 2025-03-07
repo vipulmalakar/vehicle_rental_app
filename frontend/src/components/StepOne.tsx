@@ -2,13 +2,14 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Button, TextField, Box } from "@mui/material";
 import * as Yup from "yup";
 import { useBookingForm } from "../context/BookingFormContext";
+import { BookingFormValues } from "../interfaces/BookingFormInterfaces";
 
 const StepOneSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
 });
 
-const StepOne = ({ onSubmit }: { onSubmit: (values: any) => void }) => {
+const StepOne = ({ onSubmit }: { initialValues: BookingFormValues; onSubmit: (values: BookingFormValues) => void; }) => {
   const { formData } = useBookingForm();
 
   return (

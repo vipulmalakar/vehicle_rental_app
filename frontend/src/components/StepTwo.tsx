@@ -2,12 +2,12 @@ import { Formik, Form, ErrorMessage } from "formik";
 import { Button, FormControl, FormControlLabel, Radio, RadioGroup, Box } from "@mui/material";
 import * as Yup from "yup";
 import { useBookingForm } from "../context/BookingFormContext";
+import { BookingFormValues } from "../interfaces/BookingFormInterfaces";
 
 const StepTwoSchema = Yup.object().shape({
   wheels: Yup.number().required("Please select number of wheels"),
 });
-
-const StepTwo = ({ onSubmit, onBack }: { onSubmit: (values: any) => void, onBack: () => void }) => {
+const StepTwo = ({ onSubmit, onBack }: { initialValues: BookingFormValues; onSubmit: (values: BookingFormValues) => void; onBack: () => void; }) => {
   const { formData, resetDependentFields } = useBookingForm();
 
   return (

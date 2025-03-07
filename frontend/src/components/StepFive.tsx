@@ -1,5 +1,5 @@
 import { Formik, Form, ErrorMessage } from "formik";
-import { Button, Box, TextField } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import * as Yup from "yup";
 import { useBookingForm } from "../context/BookingFormContext";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
@@ -7,6 +7,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import BookingSuccess from "./BookingSuccess";
+import axios from "axios";
+import { BookingFormValues } from "../interfaces/BookingFormInterfaces";
 
 const StepFiveSchema = Yup.object().shape({
   startDate: Yup.date()
@@ -17,18 +19,18 @@ const StepFiveSchema = Yup.object().shape({
     .min(Yup.ref('startDate'), "End date cannot be before start date"),
 });
 
-const StepFive = ({ onSubmit, onBack, onReset }: { onSubmit: (values: any) => void, onBack: () => void, onReset: () => void }) => {
+const StepFive = ({ onSubmit, onBack, onReset }: { initialValues: BookingFormValues; onSubmit: (values: BookingFormValues) => void; onBack: () => void; onReset: () => void; }) => {
   const { formData } = useBookingForm();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isBookingSuccessful, setIsBookingSuccessful] = useState(false);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: BookingFormValues) => {
     try {
       await onSubmit(values);
       setIsBookingSuccessful(true);
-    } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response && error.response.data && error.response.data.message) {
         setErrorMessage(error.response.data.message);
       } else {
         setErrorMessage("Booking failed. Please try again.");
@@ -50,7 +52,11 @@ const StepFive = ({ onSubmit, onBack, onReset }: { onSubmit: (values: any) => vo
 
   return (
     <Formik
-      initialValues={formData}
+      initialValues={{
+        ...formData,
+        startDate: formData.startDate || new Date(),
+        endDate: formData.endDate || new Date(),
+      }}
       validationSchema={StepFiveSchema}
       onSubmit={handleSubmit}
     >
@@ -63,7 +69,7 @@ const StepFive = ({ onSubmit, onBack, onReset }: { onSubmit: (values: any) => vo
                   label="Start Date"
                   value={values.startDate ? dayjs(values.startDate) : null}
                   onChange={(date: Dayjs | null) => setFieldValue("startDate", date ? date.toDate() : null)}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
+
                 />
                 <ErrorMessage name="startDate" component="div" className="text-red-500" />
                     </Box>
@@ -72,7 +78,6 @@ const StepFive = ({ onSubmit, onBack, onReset }: { onSubmit: (values: any) => vo
                   label="End Date"
                   value={values.endDate ? dayjs(values.endDate) : null}
                   onChange={(date: Dayjs | null) => setFieldValue("endDate", date ? date.toDate() : null)}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
                 />
                 <ErrorMessage name="endDate" component="div" className="text-red-500" />
               </Box>
